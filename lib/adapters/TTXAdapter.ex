@@ -13,16 +13,16 @@ defmodule Fontoscope.TTXAdapter do
   """
   @spec extract(String.t()) :: {:ok, FontInfo.t()} | {:error, String.t()}
   def extract(path) do
-    with {:ok, xml_meta} <- tables(path, ~w(name OS_2)) do
+    with {:ok, xml_meta} <- tables(path, ~w(name OS/2)) do
       foundry_id = 9
       foundry_url_id = 12
 
-      %FontInfo{
+      FontInfo.new(%{
         family: family_name(xml_meta),
         foundry: first_name_id_entry(xml_meta, foundry_id),
         foundry_url: first_name_id_entry(xml_meta, foundry_url_id),
         weight: weight(xml_meta)
-      }
+      })
     end
   end
 
@@ -64,16 +64,17 @@ defmodule Fontoscope.TTXAdapter do
   end
 
   defp weight(xml_meta) do
-    xml_meta
-    |> xpath(~x"//OS_2/usWeightClass/@value"sl)
-    |> List.first()
+    case xpath(xml_meta, ~x"//OS_2/usWeightClass/@value"sl) do
+      [weight | _] -> String.to_integer(weight)
+      _ -> 400
+    end
   end
 
   defp name_id_entries(xml_meta, name_id) do
     xml_meta
     |> xpath(~x"//namerecord[@nameID='#{name_id}']/text()"sl)
-    |> Enum.map(&String.replace(&1, ~r/\W/, " "))
-    |> Enum.reject(& String.trim(&1) == "")
+    |> Enum.map(&String.trim(&1))
+    |> Enum.reject(&(&1 == ""))
   end
 
   # We can't disable large help that always printed before the error message

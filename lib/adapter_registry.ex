@@ -1,8 +1,8 @@
-defmodule FontoScope.AdapterRegistry do
+defmodule Fontoscope.AdapterRegistry do
   @moduledoc """
   Registry for font file analysis adapters
   """
-  alias FontoScope.{TTXAdapter, EOTAdapter}
+  alias Fontoscope.{TTXAdapter, EOTAdapter}
 
   @adapters Application.compile_env(:fontoscope, :adapters, [TTXAdapter, EOTAdapter])
 

@@ -1,8 +1,10 @@
-defmodule FontoScope.EOTAdapter do
+defmodule Fontoscope.EOTAdapter do
   @moduledoc """
   Adapter for EOT files
   """
-  use FontoScope.Adapter, extensions: ~w(eot)
+  use Fontoscope.Adapter, extensions: ~w(eot)
+
+  alias Fontoscope.TTXAdapter
 
   @doc """
   Extract font info from given file

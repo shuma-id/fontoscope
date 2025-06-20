@@ -1,4 +1,4 @@
-defmodule FontoScope.Adapter do
+defmodule Fontoscope.Adapter do
   @moduledoc false
 
   @type file_path :: String.t() | Path.t()
@@ -9,7 +9,7 @@ defmodule FontoScope.Adapter do
     extensions = Keyword.fetch!(opts, :extensions)
 
     quote do
-      @behaviour FontoScope.Adapter
+      @behaviour Fontoscope.Adapter
 
       @supported_extensions unquote(extensions)
 
