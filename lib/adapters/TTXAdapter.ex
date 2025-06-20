@@ -1,8 +1,8 @@
-defmodule FontoScope.TTXAdapter do
+defmodule Fontoscope.TTXAdapter do
   @moduledoc """
   Wrapper for `ttx` console utility
   """
-  use FontoScope.Adapter, extensions: ~w(ttf otf woff woff2)
+  use Fontoscope.Adapter, extensions: ~w(ttf otf woff woff2)
 
   import SweetXml
 
