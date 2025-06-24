@@ -49,12 +49,14 @@ defmodule Fontoscope.TTXAdapter do
     # nameID='18' is compatible full macintosh family name
     # nameID='4' is full font name
     # nameID='1' is common family name
+    # nameID='6' is PostScript name
     Enum.concat([
       name_id_entries(xml_meta, 21),
       name_id_entries(xml_meta, 16),
       name_id_entries(xml_meta, 18),
       name_id_entries(xml_meta, 4),
-      name_id_entries(xml_meta, 1)
+      name_id_entries(xml_meta, 1),
+      name_id_entries(xml_meta, 6)
     ])
     |> List.first()
   end
