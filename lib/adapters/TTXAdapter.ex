@@ -31,7 +31,10 @@ defmodule Fontoscope.TTXAdapter do
   end
 
   @doc """
-  Get tables from given file
+  Get tables from given file in XML format
+
+  For more information about tables see:
+  https://learn.microsoft.com/en-us/typography/opentype/spec/otff
   """
   @spec tables(String.t(), [table_name()]) :: {:ok, String.t()} | {:error, String.t()}
   def tables(path, table_names) do
