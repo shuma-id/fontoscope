@@ -48,6 +48,8 @@ defmodule Fontoscope.TTXAdapter do
       {:ok, SweetXml.parse(content)}
     rescue
       _ -> {:error, "Failed to parse XML"}
+    catch
+      _kind, _reason -> {:error, "Failed to parse XML"}
     end
   end
 
