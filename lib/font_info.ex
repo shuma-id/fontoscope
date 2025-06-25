@@ -1,4 +1,4 @@
-defmodule FontInfo do
+defmodule Fontoscope.FontInfo do
   @moduledoc false
 
   defstruct [:family, :foundry, :foundry_url, :weight]

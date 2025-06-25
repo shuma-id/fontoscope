@@ -6,6 +6,8 @@ defmodule Fontoscope.TTXAdapter do
 
   import SweetXml
 
+  alias Fontoscope.FontInfo
+
   @type table_name :: String.t()
 
   @doc """

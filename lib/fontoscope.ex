@@ -1,7 +1,7 @@
 defmodule Fontoscope do
   @moduledoc false
 
-  alias Fontoscope.AdapterRegistry
+  alias Fontoscope.{AdapterRegistry, FontInfo}
 
   @doc """
   Extract font info from given file

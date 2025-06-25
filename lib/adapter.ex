@@ -1,6 +1,8 @@
 defmodule Fontoscope.Adapter do
   @moduledoc false
 
+  alias Fontoscope.FontInfo
+
   @type file_path :: String.t() | Path.t()
 
   @callback extract(file_path()) :: {:ok, FontInfo.t()} | {:error, String.t()}
