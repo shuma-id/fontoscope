@@ -33,7 +33,7 @@ defmodule Fontoscope.TTXAdapter do
   """
   @spec tables(String.t(), [table_name()]) :: {:ok, SweetXml.xmlElement()} | {:error, String.t()}
   def tables(path, table_names) do
-    table_names = table_names |> Enum.map(&"-t #{&1}") |> Enum.join(" ")
+    table_names = Enum.map(table_names, &" -t #{&1} ")
 
     args = ~w(-q -o - #{table_names} #{path})
 
