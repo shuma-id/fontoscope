@@ -7,7 +7,17 @@ defmodule Fontoscope.MixProject do
       version: "0.1.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      versioning: versioning()
+    ]
+  end
+
+  defp versioning do
+    [
+      tag_prefix: "release-",
+      commit_message: "release: v%s",
+      annotation: "tag release-%s created with mix version",
+      annotate: true
     ]
   end
 
@@ -22,8 +32,8 @@ defmodule Fontoscope.MixProject do
   defp deps do
     [
       {:sweet_xml, "~> 0.7.5"},
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:mix_version, "~> 2.4.0", only: :dev, runtime: false}
     ]
   end
 end
