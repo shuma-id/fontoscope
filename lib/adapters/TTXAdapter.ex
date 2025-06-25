@@ -60,15 +60,9 @@ defmodule Fontoscope.TTXAdapter do
     # nameID='4' is full font name
     # nameID='1' is common family name
     # nameID='6' is PostScript name
-    Enum.concat([
-      name_id_entries(xml, 21),
-      name_id_entries(xml, 16),
-      name_id_entries(xml, 18),
-      name_id_entries(xml, 4),
-      name_id_entries(xml, 1),
-      name_id_entries(xml, 6)
-    ])
-    |> List.first()
+    [21, 16, 18, 4, 1, 6]
+    |> Stream.flat_map(&name_id_entries(xml, &1))
+    |> Enum.at(0)
   end
 
   defp first_name_id_entry(xml, name_id) do
