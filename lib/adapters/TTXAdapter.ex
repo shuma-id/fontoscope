@@ -19,12 +19,12 @@ defmodule Fontoscope.TTXAdapter do
       foundry_id = 9
       foundry_url_id = 12
 
-      info = FontInfo.new(%{
+      info = FontInfo.new(
         family: family_name(xml_meta),
         foundry: first_name_id_entry(xml_meta, foundry_id),
         foundry_url: first_name_id_entry(xml_meta, foundry_url_id),
         weight: weight(xml_meta)
-      })
+      )
 
       {:ok, info}
     end
