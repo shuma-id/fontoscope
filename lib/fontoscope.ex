@@ -10,9 +10,8 @@ defmodule Fontoscope do
   def extract(file_path) do
     extension = get_extension(file_path)
 
-    with {:ok, adapter} <- AdapterRegistry.find_by_extension(extension),
-         {:ok, font_info} <- adapter.extract(file_path) do
-      {:ok, font_info}
+    with {:ok, adapter} <- AdapterRegistry.find_by_extension(extension) do
+      adapter.extract(file_path)
     end
   end
 
