@@ -9,7 +9,7 @@ defmodule Fontoscope.EOTAdapter do
   @doc """
   Extract font info from given file
   """
-  @spec extract(String.t()) :: {:ok, FontInfo.t()} | {:error, String.t()}
+  @spec extract(Path.t()) :: {:ok, FontInfo.t()} | {:error, String.t()}
   def extract(path) do
     parse_eot_file(path)
   end

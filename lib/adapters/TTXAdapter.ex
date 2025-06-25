@@ -8,12 +8,13 @@ defmodule Fontoscope.TTXAdapter do
 
   alias Fontoscope.{FontInfo, CLI}
 
+  # TODO: Change to some sort of typed enum?
   @type table_name :: String.t()
 
   @doc """
   Extract font info from given file
   """
-  @spec extract(String.t()) :: {:ok, FontInfo.t()} | {:error, String.t()}
+  @spec extract(Path.t()) :: {:ok, FontInfo.t()} | {:error, String.t()}
   def extract(path) do
     with {:ok, xml} <- tables(path, ~w(name OS/2)) do
       FontInfo.new(
@@ -31,7 +32,7 @@ defmodule Fontoscope.TTXAdapter do
   For more information about tables see:
   https://learn.microsoft.com/en-us/typography/opentype/spec/otff
   """
-  @spec tables(String.t(), [table_name()]) :: {:ok, SweetXml.xmlElement()} | {:error, String.t()}
+  @spec tables(Path.t(), [table_name()]) :: {:ok, SweetXml.xmlElement()} | {:error, String.t()}
   def tables(path, table_names) do
     table_names = Enum.map(table_names, &" -t #{&1} ")
 
