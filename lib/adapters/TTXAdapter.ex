@@ -16,13 +16,10 @@ defmodule Fontoscope.TTXAdapter do
   @spec extract(String.t()) :: {:ok, FontInfo.t()} | {:error, String.t()}
   def extract(path) do
     with {:ok, xml} <- tables(path, ~w(name OS/2)) do
-      foundry_id = 9
-      foundry_url_id = 12
-
       FontInfo.new(
         family: family_name(xml),
-        foundry: first_name_id_entry(xml, foundry_id),
-        foundry_url: first_name_id_entry(xml, foundry_url_id),
+        foundry: foundry_name(xml),
+        foundry_url: foundry_url(xml),
         weight: weight(xml)
       )
     end
@@ -65,17 +62,21 @@ defmodule Fontoscope.TTXAdapter do
     |> Enum.at(0)
   end
 
-  defp first_name_id_entry(xml, name_id) do
-    xml
-    |> name_id_entries(name_id)
-    |> List.first()
-  end
+  defp foundry_name(xml), do: first_name_id_entry(xml, 9)
+
+  defp foundry_url(xml), do: first_name_id_entry(xml, 12)
 
   defp weight(xml) do
     case xpath(xml, ~x"//OS_2/usWeightClass/@value"sl) do
       [weight | _] -> String.to_integer(weight)
       _ -> 400
     end
+  end
+
+  defp first_name_id_entry(xml, name_id) do
+    xml
+    |> name_id_entries(name_id)
+    |> Enum.at(0)
   end
 
   defp name_id_entries(xml, name_id) do
