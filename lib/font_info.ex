@@ -2,8 +2,8 @@ defmodule Fontoscope.FontInfo do
   @moduledoc false
   use Domo
 
-  @enforce_keys [:family, :weight]
-  defstruct [:family, :foundry, :foundry_url, :weight]
+  @enforce_keys [:family, :weight, :is_italic]
+  defstruct [:family, :foundry, :foundry_url, :weight, :is_italic]
 
   @type weight :: non_neg_integer()
   precond(weight: &(&1 >= 100 and &1 <= 900))
@@ -14,6 +14,7 @@ defmodule Fontoscope.FontInfo do
   @type t :: %__MODULE__{
     family: nonempty_str(),
     weight: weight(),
+    is_italic: boolean(),
     foundry: nonempty_str() | nil,
     foundry_url: nonempty_str() | nil
   }
