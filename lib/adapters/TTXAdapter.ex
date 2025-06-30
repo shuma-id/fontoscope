@@ -21,7 +21,8 @@ defmodule Fontoscope.TTXAdapter do
         family: family_name(xml),
         foundry: foundry_name(xml),
         foundry_url: foundry_url(xml),
-        weight: weight(xml)
+        weight: weight(xml),
+        is_italic: is_italic(xml)
       )
     end
   end
@@ -73,6 +74,16 @@ defmodule Fontoscope.TTXAdapter do
     case xpath(xml, ~x"//OS_2/usWeightClass/@value"sl) do
       [weight | _] -> String.to_integer(weight)
       _ -> 400
+    end
+  end
+
+  defp is_italic(xml) do
+    with [value | _] <- xpath(xml, ~x"//OS_2/fsSelection/@value"sl),
+         value <- String.replace(value, " ", ""),
+         {num, _} <- Integer.parse(value, 2) do
+      Bitwise.band(num, 1) == 1
+    else
+      _ -> false
     end
   end
 
