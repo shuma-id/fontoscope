@@ -66,9 +66,9 @@ defmodule Fontoscope.TTXAdapter do
     |> Enum.at(0)
   end
 
-  defp foundry_name(xml), do: first_name_id_entry(xml, 9)
+  defp foundry_name(xml), do: first_name_id_entry(xml, 8)
 
-  defp foundry_url(xml), do: first_name_id_entry(xml, 12)
+  defp foundry_url(xml), do: first_name_id_entry(xml, 11)
 
   defp weight(xml) do
     case xpath(xml, ~x"//OS_2/usWeightClass/@value"sl) do
