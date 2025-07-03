@@ -21,6 +21,7 @@ defmodule Fontoscope.TTXAdapter do
         family: family_name(xml),
         foundry: foundry_name(xml),
         foundry_url: foundry_url(xml),
+        designer: designer_name(xml),
         weight: weight(xml),
         is_italic: is_italic(xml)
       )
@@ -67,6 +68,8 @@ defmodule Fontoscope.TTXAdapter do
   end
 
   defp foundry_name(xml), do: first_name_id_entry(xml, 8)
+
+  defp designer_name(xml), do: first_name_id_entry(xml, 9)
 
   defp foundry_url(xml), do: first_name_id_entry(xml, 11)
 
