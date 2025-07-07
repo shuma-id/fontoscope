@@ -70,19 +70,33 @@ defmodule Fontoscope.TTXAdapter do
   end
 
   defp sanitized_family_name(xml) do
-    kw_group =
+    keywords =
       weight_labels()
       |> Enum.concat(["Italic"])
       |> Enum.sort_by(&String.length/1, :desc)
-      |> Enum.map(&Regex.escape/1)
-      |> Enum.join("|")
-
-    # matches first weight keyword till the end, including chained ones
-    pattern = ~r/[\s_-]+(?:#{kw_group})(?:[\s_-]+(?:#{kw_group}))*$/iu
 
     xml
     |> family_name()
-    |> String.replace(pattern, "")
+    |> remove_weight_keywords(keywords)
+    |> trim_separators()
+  end
+
+  defp remove_weight_keywords(name, keywords) do
+    Enum.reduce_while(keywords, name, fn keyword, current_name ->
+      pattern = ~r/#{Regex.escape(keyword)}$/i
+
+      if String.match?(current_name, pattern) do
+        new_name = String.replace(current_name, pattern, "") |> String.trim()
+        {:halt, remove_weight_keywords(new_name, keywords)}
+      else
+        {:cont, current_name}
+      end
+    end)
+  end
+
+  defp trim_separators(name) do
+    name
+    |> String.replace(~r/[\s_-]+$/, "")
     |> String.trim()
   end
 
