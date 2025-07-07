@@ -64,7 +64,8 @@ defmodule Fontoscope.TTXAdapter do
     # nameID='1' is common family name
     # nameID='6' is PostScript name
     [21, 16, 18, 4, 1, 6]
-    |> Stream.flat_map(&name_id_entries(xml, &1))
+    |> Enum.flat_map(&name_id_entries(xml, &1))
+    |> Enum.sort_by(&String.length/1, :desc)
     |> Enum.at(0)
   end
 
@@ -102,7 +103,7 @@ defmodule Fontoscope.TTXAdapter do
     label =
       case Regex.run(regex, family_name) do
         [_, label] -> label
-        _ -> "Regular"
+        _ -> List.first(target)
       end
       |> sanitize_weight_label()
       |> add_italic_suffix(is_italic)
@@ -149,7 +150,7 @@ defmodule Fontoscope.TTXAdapter do
         weight < 200 -> ["thin", "hairline"]
         weight < 300 -> ["extra light", "ultra light"]
         weight < 400 -> ["light"]
-        weight < 500 -> ["normal", "regular"]
+        weight < 500 -> ["regular", "normal"]
         weight < 600 -> ["medium"]
         weight < 700 -> ["semi bold", "demi bold"]
         weight < 800 -> ["bold"]
