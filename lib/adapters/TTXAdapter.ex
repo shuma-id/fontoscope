@@ -163,7 +163,7 @@ defmodule Fontoscope.TTXAdapter do
       cond do
         weight < 200 -> ["thin", "hairline"]
         weight < 300 -> ["extra light", "ultra light"]
-        weight < 400 -> ["light"]
+        weight < 400 -> ["light", "semi light"]
         weight < 500 -> ["regular", "normal"]
         weight < 600 -> ["medium"]
         weight < 700 -> ["semi bold", "demi bold"]
