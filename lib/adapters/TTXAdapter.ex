@@ -47,12 +47,30 @@ defmodule Fontoscope.TTXAdapter do
   end
 
   defp parse_xml(content) do
+    sanitized_content = sanitize_xml(content)
+
     try do
-      {:ok, SweetXml.parse(content)}
+      {:ok, SweetXml.parse(sanitized_content)}
     rescue
-      _ -> {:error, "Failed to parse XML"}
+      error -> {:error, "Failed to parse XML: #{inspect(error)}"}
     catch
-      _kind, _reason -> {:error, "Failed to parse XML"}
+      kind, reason -> {:error, "Failed to parse XML: #{inspect(kind)} #{inspect(reason)}"}
+    end
+  end
+
+  # Remove invalid characters from XML content
+  # According to XML 1.0 specification (https://www.w3.org/TR/xml/#charsets)
+  defp sanitize_xml(content) do
+    content
+    |> String.replace(~r/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/, "")
+    |> ensure_utf8()
+  end
+
+  defp ensure_utf8(content) do
+    case :unicode.characters_to_binary(content, :utf8, :utf8) do
+      {:error, _, _} -> ""
+      {:incomplete, _, _} -> ""
+      valid_utf8 -> valid_utf8
     end
   end
 
