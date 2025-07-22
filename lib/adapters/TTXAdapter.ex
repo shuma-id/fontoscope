@@ -128,15 +128,15 @@ defmodule Fontoscope.TTXAdapter do
   defp weight(xml) do
     family_name = family_name(xml)
     value = weight_value(xml)
-    target = weight_label(value)
+    target_labels = weight_labels()
     is_italic = is_italic(xml)
 
-    regex = ~r/[\s_-]+(#{Enum.join(target, "|")})[\s_-]*$/i
+    regex = ~r/[\s_-]+(#{Enum.join(target_labels, "|")})[\s_-]*$/i
 
     label =
       case Regex.run(regex, family_name) do
         [_, label] -> label
-        _ -> List.first(target)
+        _ -> List.first(weight_label(value))
       end
       |> sanitize_weight_label()
       |> add_italic_suffix(is_italic)
