@@ -86,6 +86,12 @@ defmodule Fontoscope.TTXAdapter do
     |> Enum.flat_map(&name_id_entries(xml, &1))
     |> Enum.sort_by(&String.length/1, :desc)
     |> Enum.at(0, "")
+    |> trim_non_word_characters()
+  end
+
+  defp trim_non_word_characters(name) do
+    name
+    |> String.replace(~r/^\W+|\W+$/u, "")
   end
 
   defp sanitized_family_name(xml) do
