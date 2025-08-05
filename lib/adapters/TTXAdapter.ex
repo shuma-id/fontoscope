@@ -84,7 +84,6 @@ defmodule Fontoscope.TTXAdapter do
     # nameID='6' is PostScript name
     [21, 16, 18, 4, 1, 6]
     |> Enum.flat_map(&name_id_entries(xml, &1))
-    |> Enum.sort_by(&String.length/1, :desc)
     |> Enum.at(0, "")
     |> trim_non_word_characters()
   end
@@ -231,11 +230,28 @@ defmodule Fontoscope.TTXAdapter do
     |> Enum.at(0)
   end
 
+  # Fetch all text entries for the given `name_id` and sort them according
+  # to preferred `platformID`s. Some fonts contain several records for the
+  # same `nameID` that differ only by `platformID`.
+  #
+  # The OpenType specification does not define an official priority order, so
+  # we establish one that works best in practice:
+  #   1. Unicode     – `platformID = 0`
+  #   2. Windows     – `platformID = 3`
+  #   3. Macintosh   – `platformID = 1`
   defp name_id_entries(xml, name_id) do
     xml
-    |> xpath(~x"//namerecord[@nameID='#{name_id}']/text()"sl)
-    |> Enum.map(&String.trim(&1))
+    |> xpath(~x"//namerecord[@nameID='#{name_id}']"l, name: ~x"./text()"s, platform: ~x"@platformID"i)
+    |> sort_by_platform()
+    |> Enum.map(fn %{name: name} -> String.trim(name) end)
     |> Enum.reject(&(&1 == ""))
+  end
+
+  defp sort_by_platform(entries) do
+    preferred_platform_order = [0, 3, 1]
+    Enum.sort_by(entries, fn %{platform: platform} ->
+      Enum.find_index(preferred_platform_order, &(&1 == platform))
+    end, :desc)
   end
 
   defp class(xml) do
