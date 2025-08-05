@@ -26,23 +26,23 @@ defmodule Fontoscope do
   end
 
   defp detect_extension(file_path) do
-    extension = get_extension_from_path(file_path)
+    extension = detect_extension_by_path(file_path)
 
     if extension in AdapterRegistry.supported_extensions() do
       extension
     else
-      get_extension_by_signature(file_path)
+      detect_extension_by_signature(file_path)
     end
   end
 
-  defp get_extension_from_path(file_path) do
+  defp detect_extension_by_path(file_path) do
     file_path
     |> Path.extname()
     |> String.downcase()
     |> String.trim_leading(".")
   end
 
-  defp get_extension_by_signature(file_path) do
+  defp detect_extension_by_signature(file_path) do
     first_bytes = File.stream!(file_path, 36) |> Enum.at(0)
 
     case first_bytes do
