@@ -34,7 +34,6 @@ defmodule Fontoscope.MixProject do
     [
       {:sweet_xml, "~> 0.7.5"},
       {:domo, "~> 1.5.17"},
-      {:enum_type, "~> 1.1.3"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:mix_version, "~> 2.4.0", only: :dev, runtime: false}
     ]

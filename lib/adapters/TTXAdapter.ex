@@ -6,7 +6,7 @@ defmodule Fontoscope.TTXAdapter do
 
   import SweetXml
 
-  alias Fontoscope.{FontInfo, CLI, Weight, FontClass}
+  alias Fontoscope.{FontInfo, CLI, Weight}
 
   # TODO: Change to some sort of typed enum?
   @type table_name :: String.t()
@@ -261,7 +261,7 @@ defmodule Fontoscope.TTXAdapter do
         |> String.to_integer()
         |> get_class()
       _ ->
-        FontClass.Unclassified
+        :unclassified
     end
   end
 
@@ -270,17 +270,17 @@ defmodule Fontoscope.TTXAdapter do
     class = div(class_value, 256)
 
     case class do
-      1 -> FontClass.OldstyleSerif
-      2 -> FontClass.TransitionalSerif
-      3 -> FontClass.ModernSerif
-      4 -> FontClass.ClarendonSerif
-      5 -> FontClass.SlabSerif
-      7 -> FontClass.FreeformSerif
-      8 -> FontClass.SansSerif
-      9 -> FontClass.Ornamental
-      10 -> FontClass.Script
-      12 -> FontClass.Symbolic
-      _ -> FontClass.Unclassified
+      1 -> :oldstyle_serif
+      2 -> :transitional_serif
+      3 -> :modern_serif
+      4 -> :clarendon_serif
+      5 -> :slab_serif
+      7 -> :freeform_serif
+      8 -> :sans_serif
+      9 -> :ornamental
+      10 -> :script
+      12 -> :symbolic
+      _ -> :unclassified
     end
   end
 
