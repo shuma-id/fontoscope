@@ -5,10 +5,16 @@ defmodule Fontoscope.FontInfo do
   alias Fontoscope.{Weight, FontClass}
 
   @enforce_keys [:family, :weight, :is_italic]
-  defstruct [:family, :foundry, :foundry_url, :weight, :is_italic, :designer, :class]
+  defstruct [:family, :foundry, :foundry_url, :weight, :is_italic, :designer, :class, :unique_identifier]
 
   @type nonempty_str :: String.t()
   precond(nonempty_str: &(String.length(String.trim(&1)) > 0))
+
+  @type unique_identifier() :: %{
+    version: String.t(),
+    foundry_tag: String.t(),
+    family: String.t()
+  }
 
   @type t :: %__MODULE__{
     family: nonempty_str(),
@@ -17,7 +23,8 @@ defmodule Fontoscope.FontInfo do
     foundry: nonempty_str() | nil,
     foundry_url: nonempty_str() | nil,
     designer: nonempty_str() | nil,
-    class: FontClass.t() | nil
+    class: FontClass.t() | nil,
+    unique_identifier: unique_identifier() | nil
   }
 
 end
