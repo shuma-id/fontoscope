@@ -25,7 +25,8 @@ defmodule Fontoscope.TTXAdapter do
         designer: designer_name(xml),
         weight: weight,
         is_italic: is_italic(xml),
-        class: class(xml)
+        class: class(xml),
+        unique_identifier: unique_identifier(xml)
       )
     end
   end
@@ -129,6 +130,18 @@ defmodule Fontoscope.TTXAdapter do
   defp designer_name(xml), do: first_name_id_entry(xml, 9)
 
   defp foundry_url(xml), do: first_name_id_entry(xml, 11)
+
+  defp unique_identifier(xml) do
+    entries =
+      xml
+      |> name_id_entries(3)
+      |> Enum.map(&String.split(&1, ";"))
+      |> List.first([])
+
+    ~w(version foundry_tag family)a
+    |> Enum.zip(entries)
+    |> Map.new(fn {key, val} -> {key, String.trim(val)} end)
+  end
 
   defp weight(xml) do
     family_name = family_name(xml)
