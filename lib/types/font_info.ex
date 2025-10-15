@@ -2,7 +2,7 @@ defmodule Fontoscope.FontInfo do
   @moduledoc false
   use Domo
 
-  alias Fontoscope.{Weight, FontClass}
+  alias Fontoscope.{FontClass, Weight}
 
   @enforce_keys [:family, :weight, :modifiers]
   defstruct [:family, :foundry, :foundry_url, :weight, :modifiers, :designer, :class, :unique_identifier]

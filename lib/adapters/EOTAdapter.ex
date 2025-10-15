@@ -4,7 +4,7 @@ defmodule Fontoscope.EOTAdapter do
   """
   use Fontoscope.Adapter, extensions: ~w(eot)
 
-  alias Fontoscope.{TTXAdapter, FontInfo}
+  alias Fontoscope.{FontInfo, TTXAdapter}
 
   @doc """
   Extract font info from given file

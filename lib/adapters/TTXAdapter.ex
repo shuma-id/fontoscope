@@ -6,9 +6,8 @@ defmodule Fontoscope.TTXAdapter do
 
   import SweetXml
 
-  alias Fontoscope.{FontInfo, CLI, Weight}
+  alias Fontoscope.{CLI, FontInfo, Weight}
 
-  # TODO: Change to some sort of typed enum?
   @type table_name :: String.t()
 
   @doc """
@@ -145,7 +144,7 @@ defmodule Fontoscope.TTXAdapter do
     family_name = family_name(xml)
     value = weight_value(xml)
     target_labels = weight_labels()
-    is_italic = is_italic(xml)
+    is_italic = italic?(xml)
 
     regex = ~r/[\s_-]+(#{Enum.join(target_labels, "|")})[\s_-]*$/i
 
@@ -174,8 +173,7 @@ defmodule Fontoscope.TTXAdapter do
     label
     |> String.trim()
     |> split_compound_label()
-    |> Enum.map(&String.capitalize/1)
-    |> Enum.join(" ")
+    |> Enum.map_join(" ", &String.capitalize/1)
   end
 
   defp split_compound_label(text) do
@@ -226,19 +224,19 @@ defmodule Fontoscope.TTXAdapter do
   end
 
   defp modifiers(xml) do
-    %{italic: is_italic(xml), variable: is_variable(xml)}
+    %{italic: italic?(xml), variable: variable?(xml)}
     |> Map.filter(fn {_k, v} -> v end)
     |> Map.keys()
   end
 
-  defp is_variable(xml) do
+  defp variable?(xml) do
     case xpath(xml, ~x"//fvar") do
       nil -> false
       _ -> true
     end
   end
 
-  defp is_italic(xml) do
+  defp italic?(xml) do
     with [value | _] <- xpath(xml, ~x"//OS_2/fsSelection/@value"sl),
          value <- String.replace(value, " ", ""),
          {num, _} <- Integer.parse(value, 2) do
