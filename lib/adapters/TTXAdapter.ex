@@ -6,7 +6,7 @@ defmodule Fontoscope.TTXAdapter do
 
   import SweetXml
 
-  alias Fontoscope.{FontInfo, CLI, Weight}
+  alias Fontoscope.{CLI, FontInfo, Weight}
 
   # TODO: Change to some sort of typed enum?
   @type table_name :: String.t()
