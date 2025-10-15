@@ -132,15 +132,13 @@ defmodule Fontoscope.TTXAdapter do
   defp foundry_url(xml), do: first_name_id_entry(xml, 11)
 
   defp unique_identifier(xml) do
-    entries =
-      xml
-      |> name_id_entries(3)
-      |> Enum.map(&String.split(&1, ";"))
-      |> List.first([])
-
-    ~w(version foundry_tag family)a
-    |> Enum.zip(entries)
-    |> Map.new(fn {key, val} -> {key, String.trim(val)} end)
+    xml
+    |> name_id_entries(3)
+    |> Enum.map(&String.split(&1, ";"))
+    |> List.first([])
+    |> Enum.zip(~w(version foundry_tag family)a)
+    |> Map.new(fn {val, key} -> {key, String.trim(val)} end)
+    |> then(fn id -> if Enum.empty?(id), do: nil, else: id end)
   end
 
   defp weight(xml) do
