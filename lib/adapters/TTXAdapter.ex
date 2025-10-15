@@ -16,7 +16,7 @@ defmodule Fontoscope.TTXAdapter do
   """
   @spec extract(Path.t()) :: {:ok, FontInfo.t()} | {:error, String.t()}
   def extract(path) do
-    with {:ok, xml} <- tables(path, ~w(name OS/2)),
+    with {:ok, xml} <- tables(path, ~w(name fvar OS/2)),
          {:ok, weight} <- weight(xml) do
       FontInfo.new(
         family: sanitized_family_name(xml),
@@ -24,7 +24,7 @@ defmodule Fontoscope.TTXAdapter do
         foundry_url: foundry_url(xml),
         designer: designer_name(xml),
         weight: weight,
-        is_italic: is_italic(xml),
+        modifiers: modifiers(xml),
         class: class(xml),
         unique_identifier: unique_identifier(xml)
       )
@@ -224,6 +224,19 @@ defmodule Fontoscope.TTXAdapter do
       ]
     else
       [label]
+    end
+  end
+
+  defp modifiers(xml) do
+    %{italic: is_italic(xml), variable: is_variable(xml)}
+    |> Map.filter(fn {_k, v} -> v end)
+    |> Map.keys()
+  end
+
+  defp is_variable(xml) do
+    case xpath(xml, ~x"//fvar") do
+      nil -> false
+      _ -> true
     end
   end
 
