@@ -7,5 +7,4 @@ defmodule Fontoscope.CLI do
       {error, _} -> on_error.(error)
     end
   end
-
 end

@@ -11,7 +11,7 @@ defmodule Fontoscope.AdapterRegistry do
   """
   @spec find_by_extension(String.t()) :: {:ok, module()} | {:error, :not_found}
   def find_by_extension(extension) do
-    case Enum.find(@adapters, & extension in &1.supported_extensions()) do
+    case Enum.find(@adapters, &(extension in &1.supported_extensions())) do
       nil -> {:error, "Unsupported file extension: #{extension}"}
       adapter -> {:ok, adapter}
     end
@@ -34,5 +34,4 @@ defmodule Fontoscope.AdapterRegistry do
   def adapters do
     @adapters
   end
-
 end

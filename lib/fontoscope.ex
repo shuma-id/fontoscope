@@ -51,5 +51,4 @@ defmodule Fontoscope do
       _ -> nil
     end)
   end
-
 end

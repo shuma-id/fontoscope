@@ -5,9 +5,9 @@ defmodule Fontoscope.Weight do
   defstruct ~w(label value)a
 
   @type t :: %__MODULE__{
-    label: String.t(),
-    value: non_neg_integer()
-  }
+          label: String.t(),
+          value: non_neg_integer()
+        }
 
   @spec new(map() | keyword()) :: {:ok, t()} | {:error, any()}
   def new(params) do

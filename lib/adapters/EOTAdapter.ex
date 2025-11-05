@@ -26,10 +26,11 @@ defmodule Fontoscope.EOTAdapter do
   end
 
   defp with_temp_file(content, extension, function) do
-    temp_path = Path.join(
-      System.tmp_dir(),
-      "font_meta_#{:erlang.unique_integer([:positive])}.#{extension}"
-    )
+    temp_path =
+      Path.join(
+        System.tmp_dir(),
+        "font_meta_#{:erlang.unique_integer([:positive])}.#{extension}"
+      )
 
     File.write!(temp_path, content)
 
@@ -39,5 +40,4 @@ defmodule Fontoscope.EOTAdapter do
 
     result
   end
-
 end

@@ -16,5 +16,4 @@ defmodule Fontoscope.Adapter do
       def supported_extensions, do: @supported_extensions
     end
   end
-
 end
