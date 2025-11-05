@@ -42,9 +42,10 @@ defmodule Fontoscope.TTXAdapter do
 
     args = ~w(-q -o - #{table_names} #{path})
 
-    CLI.cmd "ttx", args, [stderr_to_stdout: true],
+    CLI.cmd("ttx", args, [stderr_to_stdout: true],
       do: &parse_xml/1,
       else: &make_error/1
+    )
   end
 
   defp parse_xml(content) do
@@ -137,7 +138,7 @@ defmodule Fontoscope.TTXAdapter do
     |> List.first([])
     |> Enum.zip(~w(version foundry_tag family)a)
     |> Map.new(fn {val, key} -> {key, String.trim(val)} end)
-    |> then(fn id -> if Enum.empty?(id), do: nil, else: id end)
+    |> then(fn id -> if Enum.count(id) != 3, do: nil, else: id end)
   end
 
   defp weight(xml) do
@@ -263,7 +264,10 @@ defmodule Fontoscope.TTXAdapter do
   #   3. Macintosh   – `platformID = 1`
   defp name_id_entries(xml, name_id) do
     xml
-    |> xpath(~x"//namerecord[@nameID='#{name_id}']"l, name: ~x"./text()"s, platform: ~x"@platformID"i)
+    |> xpath(~x"//namerecord[@nameID='#{name_id}']"l,
+      name: ~x"./text()"s,
+      platform: ~x"@platformID"i
+    )
     |> sort_by_platform()
     |> Enum.map(fn %{name: name} -> String.trim(name) end)
     |> Enum.reject(&(&1 == ""))
@@ -271,9 +275,14 @@ defmodule Fontoscope.TTXAdapter do
 
   defp sort_by_platform(entries) do
     preferred_platform_order = [0, 3, 1]
-    Enum.sort_by(entries, fn %{platform: platform} ->
-      Enum.find_index(preferred_platform_order, &(&1 == platform))
-    end, :desc)
+
+    Enum.sort_by(
+      entries,
+      fn %{platform: platform} ->
+        Enum.find_index(preferred_platform_order, &(&1 == platform))
+      end,
+      :desc
+    )
   end
 
   defp class(xml) do
@@ -282,6 +291,7 @@ defmodule Fontoscope.TTXAdapter do
         value
         |> String.to_integer()
         |> get_class()
+
       _ ->
         :unclassified
     end
@@ -314,5 +324,4 @@ defmodule Fontoscope.TTXAdapter do
       [_, error] -> {:error, String.trim(error)}
     end
   end
-
 end
