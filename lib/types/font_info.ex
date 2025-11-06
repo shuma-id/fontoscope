@@ -5,23 +5,29 @@ defmodule Fontoscope.FontInfo do
   alias Fontoscope.FontInfo
   alias Fontoscope.{FontClass, Weight}
 
+  @source_file_extensions ~w(otf ttf eot woff woff2)a
+
   @enforce_keys ~w(family weight modifiers)a
-  defstruct ~w(family foundry foundry_url weight modifiers designer class unique_identifier)a
+  defstruct ~w(family foundry foundry_url weight modifiers source_file_extension
+               designer class unique_identifier)a
 
   @type nonempty_str :: String.t()
 
-  @type unique_identifier() :: %{
+  @type unique_identifier :: %{
           version: String.t(),
           foundry_tag: String.t(),
           family: String.t()
         }
 
-  @type modifier() :: :italic | :variable
+  @type modifier :: :italic | :variable
+
+  @type extension :: :otf | :ttf | :eot | :woff | :woff2
 
   @type t :: %__MODULE__{
           family: nonempty_str(),
           weight: Weight.t(),
           modifiers: [modifier()],
+          source_file_extension: extension() | nil,
           foundry: nonempty_str() | nil,
           foundry_url: nonempty_str() | nil,
           designer: nonempty_str() | nil,
@@ -46,12 +52,30 @@ defmodule Fontoscope.FontInfo do
     with {:ok, params} <- validate_family(params),
          {:ok, params} <- validate_weight(params),
          {:ok, params} <- validate_modifiers(params),
+         {:ok, params} <- validate_extension(params),
          {:ok, params} <- validate_foundry_designer(params),
          {:ok, params} <- validate_class(params),
          {:ok, params} <- validate_unique_identifier(params) do
       {:ok, struct(__MODULE__, params)}
     end
   end
+
+  @spec cast_extension(binary()) :: {:ok, extension()} | :error
+  def cast_extension(extension) when is_binary(extension) do
+    sanitized =
+      extension
+      |> String.trim()
+      |> String.downcase()
+
+    if sanitized in Enum.map(@source_file_extensions, &to_string/1),
+      do: {:ok, String.to_atom(sanitized)},
+      else: :error
+  end
+
+  def cast_extension(extension) when extension in @source_file_extensions,
+    do: {:ok, extension}
+
+  def cast_extension(_extension), do: :error
 
   defp validate_family(%{family: family}) when not is_binary(family),
     do: {:error, %{family: "must be a string"}}
@@ -86,6 +110,15 @@ defmodule Fontoscope.FontInfo do
       {:error, %{modifiers: "must contain only :italic and :variable"}}
     end
   end
+
+  defp validate_extension(%{source_file_extension: extension} = params)
+    when extension in @source_file_extensions,
+    do: {:ok, params}
+
+  defp validate_extension(%{source_file_extension: _extension}),
+    do: {:error, %{source_file_extension: "must be in #{inspect(@source_file_extensions)}"}}
+
+  defp validate_extension(params), do: {:ok, params}
 
   defp validate_foundry_designer(params) do
     optional_fields = ~w(foundry foundry_url designer)a
