@@ -46,8 +46,10 @@ defmodule Fontoscope do
   defp dispatch_by_signature({:error, reason}), do: {:error, "Failed to read file: #{reason}"}
 
   defp put_extension(font_info, extension) do
-    {:ok, extension} = FontInfo.cast_extension(extension)
-    %{font_info | source_file_extension: extension}
+    case FontInfo.cast_extension(extension) do
+      {:ok, ext} -> %{font_info | source_file_extension: ext}
+      :error -> font_info
+    end
   end
 
   defp run_callbacks(file_path, opts) do
