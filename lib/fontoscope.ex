@@ -10,16 +10,16 @@ defmodule Fontoscope do
   """
   @spec extract(Path.t(), opts()) :: {:ok, FontInfo.t()} | {:error, String.t()}
   def extract(file_path, opts \\ []) do
-    with {:ok, adapter} <- find_adapter(file_path) do
-      result = adapter.extract(file_path)
-      run_callbacks(file_path, opts)
-      result
-    end
+    result = do_extract(file_path)
+    run_callbacks(file_path, opts)
+    result
   end
 
-  defp find_adapter(file_path) do
-    with {:ok, extension} <- detect_extension_by_signature(file_path) do
-      AdapterRegistry.find_by_extension(extension)
+  defp do_extract(file_path) do
+    with {:ok, extension} <- detect_extension_by_signature(file_path),
+         {:ok, adapter} <- AdapterRegistry.find_by_extension(extension),
+         {:ok, font_info} <- adapter.extract(file_path) do
+      {:ok, put_extension(font_info, extension)}
     end
   end
 
@@ -44,6 +44,11 @@ defmodule Fontoscope do
 
   defp dispatch_by_signature(:eof), do: {:error, "File may be corrupted or empty"}
   defp dispatch_by_signature({:error, reason}), do: {:error, "Failed to read file: #{reason}"}
+
+  defp put_extension(font_info, extension) do
+    {:ok, extension} = FontInfo.cast_extension(extension)
+    %{font_info | source_file_extension: extension}
+  end
 
   defp run_callbacks(file_path, opts) do
     Enum.each(opts, fn
