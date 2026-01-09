@@ -34,10 +34,10 @@ defmodule Fontoscope.EOTAdapter do
 
     File.write!(temp_path, content)
 
-    result = function.(temp_path)
-
-    File.rm!(temp_path)
-
-    result
+    try do
+      function.(temp_path)
+    after
+      File.rm!(temp_path)
+    end
   end
 end
