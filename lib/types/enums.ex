@@ -12,14 +12,15 @@ defmodule Fontoscope.FontClass do
           | :slab_serif
           | :freeform_serif
           | :sans_serif
+          | :serif
           | :ornamental
           | :script
           | :symbolic
 
-  @spec values() :: [t, ...]
+  @spec values() :: [t(), ...]
   def values do
     ~w(unclassified oldstyle_serif transitional_serif modern_serif
-      clarendon_serif slab_serif freeform_serif sans_serif
+      clarendon_serif slab_serif serif freeform_serif sans_serif
       ornamental script symbolic)a
   end
 end
