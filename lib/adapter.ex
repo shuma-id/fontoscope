@@ -4,6 +4,7 @@ defmodule Fontoscope.Adapter do
   alias Fontoscope.FontInfo
 
   @callback extract(Path.t()) :: {:ok, FontInfo.t()} | {:error, String.t()}
+  @callback supported_extensions() :: [String.t(), ...]
 
   defmacro __using__(opts) do
     extensions = Keyword.fetch!(opts, :extensions)
