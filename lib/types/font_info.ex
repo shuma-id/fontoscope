@@ -2,8 +2,8 @@ defmodule Fontoscope.FontInfo do
   @moduledoc false
 
   require Fontoscope.FontClass
-  alias Fontoscope.FontInfo
-  alias Fontoscope.{FontClass, Weight}
+
+  alias Fontoscope.{FontClass, FontInfo, Weight}
 
   @source_file_extensions ~w(otf ttf eot woff woff2)a
 
@@ -112,8 +112,8 @@ defmodule Fontoscope.FontInfo do
   end
 
   defp validate_extension(%{source_file_extension: extension} = params)
-    when extension in @source_file_extensions,
-    do: {:ok, params}
+       when extension in @source_file_extensions,
+       do: {:ok, params}
 
   defp validate_extension(%{source_file_extension: _extension}),
     do: {:error, %{source_file_extension: "must be in #{inspect(@source_file_extensions)}"}}

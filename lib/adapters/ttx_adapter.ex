@@ -38,9 +38,9 @@ defmodule Fontoscope.TTXAdapter do
   """
   @spec tables(Path.t(), [table_name()]) :: {:ok, SweetXml.xmlElement()} | {:error, String.t()}
   def tables(path, table_names) do
-    table_names = Enum.map(table_names, &" -t #{&1} ")
+    table_names = Enum.flat_map(table_names, &["-t", to_string(&1)])
 
-    args = ~w(-q -o - #{table_names} #{path})
+    args = ~w(-q -o -) ++ table_names ++ [to_string(path)]
 
     CLI.cmd("ttx", args, [stderr_to_stdout: true],
       do: &parse_xml/1,
@@ -286,6 +286,26 @@ defmodule Fontoscope.TTXAdapter do
   end
 
   defp class(xml) do
+    with :unclassified <- class_by_panose(xml) do
+      class_by_family(xml)
+    end
+  end
+
+  defp class_by_panose(xml) do
+    family_type = xpath(xml, ~x"//OS_2/panose/bFamilyType/@value"i)
+    serif_style = xpath(xml, ~x"//OS_2/panose/bSerifStyle/@value"i)
+
+    case {family_type, serif_style} do
+      {2, serif_style} when serif_style in 1..9 -> :serif
+      {2, serif_style} when serif_style in 10..14 -> :sans_serif
+      {3, _} -> :script
+      {4, _} -> :ornamental
+      {5, _} -> :symbolic
+      _ -> :unclassified
+    end
+  end
+
+  defp class_by_family(xml) do
     case xpath(xml, ~x"//OS_2/sFamilyClass/@value"sl) do
       [value | _] ->
         value

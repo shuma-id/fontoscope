@@ -9,11 +9,16 @@ defmodule Fontoscope.AdapterRegistry do
   @doc """
   Find adapter by extension
   """
-  @spec find_by_extension(String.t()) :: {:ok, module()} | {:error, :not_found}
+  @spec find_by_extension(String.t()) :: {:ok, module()} | {:error, String.t()}
   def find_by_extension(extension) do
-    case Enum.find(@adapters, &(extension in &1.supported_extensions())) do
-      nil -> {:error, "Unsupported file extension: #{extension}"}
-      adapter -> {:ok, adapter}
+    ext_to_adapter =
+      @adapters
+      |> Enum.flat_map(fn adapter -> Enum.map(adapter.supported_extensions(), &{&1, adapter}) end)
+      |> Map.new()
+
+    with :error <- Map.fetch(ext_to_adapter, extension) do
+      supported_exts = Enum.join(Map.keys(ext_to_adapter), ", ")
+      {:error, "Unsupported extension: '#{extension}'. Supported: #{supported_exts}"}
     end
   end
 

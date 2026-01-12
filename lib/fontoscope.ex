@@ -24,26 +24,27 @@ defmodule Fontoscope do
   end
 
   defp detect_extension_by_signature(file_path) do
-    with {:ok, file} <- File.open(file_path) do
-      first_bytes = :file.read(file, 36)
+    case read_first_bytes(file_path, 36) do
+      {:ok, <<0x77, 0x4F, 0x46, 0x46, _rest::binary>>} -> {:ok, "woff"}
+      {:ok, <<0x77, 0x4F, 0x46, 0x32, _rest::binary>>} -> {:ok, "woff2"}
+      {:ok, <<0x00, 0x01, 0x00, 0x00, 0x00, _rest::binary>>} -> {:ok, "ttf"}
+      {:ok, <<0x4F, 0x54, 0x54, 0x4F, _rest::binary>>} -> {:ok, "otf"}
+      {:ok, <<_first::binary-size(34), 0x4C, 0x50, _rest::binary>>} -> {:ok, "eot"}
+      {:ok, _bytes} -> {:error, "Can't detect file format by signature"}
+      error -> error
+    end
+  end
+
+  defp read_first_bytes(file_path, bytes) do
+    with {:ok, file} <- File.open(file_path),
+         {:ok, first_bytes} <- :file.read(file, bytes) do
       File.close(file)
-      dispatch_by_signature(first_bytes)
+      {:ok, first_bytes}
+    else
+      {:error, reason} -> {:error, "Failed to read file: #{inspect(reason)}"}
+      :eof -> {:error, "File may be corrupted or empty"}
     end
   end
-
-  defp dispatch_by_signature({:ok, first_bytes}) do
-    case first_bytes do
-      <<0x77, 0x4F, 0x46, 0x46, _rest::binary>> -> {:ok, "woff"}
-      <<0x77, 0x4F, 0x46, 0x32, _rest::binary>> -> {:ok, "woff2"}
-      <<0x00, 0x01, 0x00, 0x00, 0x00, _rest::binary>> -> {:ok, "ttf"}
-      <<0x4F, 0x54, 0x54, 0x4F, _rest::binary>> -> {:ok, "otf"}
-      <<_first::binary-size(34), 0x4C, 0x50, _rest::binary>> -> {:ok, "eot"}
-      _ -> {:error, "Unsupported file format"}
-    end
-  end
-
-  defp dispatch_by_signature(:eof), do: {:error, "File may be corrupted or empty"}
-  defp dispatch_by_signature({:error, reason}), do: {:error, "Failed to read file: #{reason}"}
 
   defp put_extension(font_info, extension) do
     case FontInfo.cast_extension(extension) do
